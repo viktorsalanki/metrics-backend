@@ -55,3 +55,31 @@ class MetricViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         with self.assertRaises(Metric.DoesNotExist):
             Metric.objects.get(id=metric.id)
+
+    def test_get_single_metric(self):
+        metric = Metric.objects.create(
+            timestamp='2023-11-08T12:00:00Z',
+            name='pressure',
+            value=1013.25
+        )
+
+        url = reverse('metrics-detail', args=[metric.id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+
+        self.assertEqual(data['id'], metric.id)
+        self.assertEqual(data['timestamp'], '2023-11-08T12:00:00Z')
+        self.assertEqual(data['name'], metric.name)
+        self.assertEqual(data['value'], metric.value)
+
+    def test_get_single_metric_not_found(self):
+        invalid_id = 999
+        url = reverse('metrics-detail', args=[invalid_id])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Metric not found')

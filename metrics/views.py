@@ -25,6 +25,13 @@ class MetricView(View):
         return JsonResponse(response_data)
 
     def get(self, request, *args, **kwargs):
+        metric_id = kwargs.get('metric_id')
+        if metric_id:
+            return self.get_single_metric(request, metric_id, args, kwargs)
+        
+        return self.get_metrics(request, args, kwargs)
+
+    def get_metrics(self, request, *args, **kwargs):
         metrics = Metric.objects.all()
         response_data = [
             {
@@ -38,6 +45,24 @@ class MetricView(View):
             for metric in metrics
         ]
         return JsonResponse(response_data, safe=False)
+
+    def get_single_metric(self, request, metric_id, *args, **kwargs):
+        try:
+            metric = Metric.objects.get(id=metric_id)
+            
+            response_data = {
+            "id": metric.id,
+            "timestamp": metric.timestamp,
+            "name": metric.name,
+            "value": metric.value,
+            "created_at": metric.created_at,
+            "updated_at": metric.updated_at,
+            }
+
+            return JsonResponse(response_data)
+
+        except Metric.DoesNotExist:
+            return JsonResponse({"error": "Metric not found"}, status=404)
 
     def put(self, request, metric_id, *args, **kwargs):
         data = json.loads(request.body)
