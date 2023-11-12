@@ -27,11 +27,11 @@ class MetricView(View):
     def get(self, request, *args, **kwargs):
         metric_id = kwargs.get('metric_id')
         if metric_id:
-            return self.get_single_metric(request, metric_id, args, kwargs)
+            return self.get_single_metric(request, metric_id)
         
-        return self.get_metrics(request, args, kwargs)
+        return self.get_metrics(request)
 
-    def get_metrics(self, request, *args, **kwargs):
+    def get_metrics(self, request):
         metrics = Metric.objects.all()
         response_data = [
             {
@@ -46,7 +46,7 @@ class MetricView(View):
         ]
         return JsonResponse(response_data, safe=False)
 
-    def get_single_metric(self, request, metric_id, *args, **kwargs):
+    def get_single_metric(self, request, metric_id):
         try:
             metric = Metric.objects.get(id=metric_id)
             

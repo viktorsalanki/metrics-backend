@@ -3,6 +3,6 @@ from .views import MetricView
 
 
 urlpatterns = [
-    path('metrics/', MetricView.as_view(), name='metrics-list'),
-    path('metrics/<int:metric_id>/', MetricView.as_view(), name='metrics-detail'),
+    path('', MetricView.as_view(), name='metrics-list'),
+    path('<int:metric_id>/', MetricView.as_view(), name='metrics-detail'),
 ]
