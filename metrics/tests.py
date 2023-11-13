@@ -1,7 +1,9 @@
 import json
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 from .models import Metric
+from .services import MetricsService
 
 
 class MetricViewTests(TestCase):
@@ -83,3 +85,42 @@ class MetricViewTests(TestCase):
         data = response.json()
         self.assertIn('error', data)
         self.assertEqual(data['error'], 'Metric not found')
+
+
+class MetricServicesTests(TestCase):
+    def setUp(self):
+        Metric.objects.create(timestamp=timezone.now(), name='temperature', value=20.0)
+        Metric.objects.create(timestamp=timezone.now(), name='temperature', value=30.0)
+
+    def test_calculate_averages_minute(self):
+        metrics_service = MetricsService()
+
+        averages = metrics_service.calculate_averages('minute')
+
+        self.assertIn('time_interval', averages[0])
+        self.assertIn('average_value', averages[0])
+        self.assertEqual(averages[0]['average_value'], 25.0)
+
+    def test_calculate_averages_hour(self):
+        metrics_service = MetricsService()
+
+        averages = metrics_service.calculate_averages('hour')
+
+        self.assertIn('time_interval', averages[0])
+        self.assertIn('average_value', averages[0])
+        self.assertEqual(averages[0]['average_value'], 25.0)
+
+    def test_calculate_averages_day(self):
+        metrics_service = MetricsService()
+
+        averages = metrics_service.calculate_averages('day')
+
+        self.assertIn('time_interval', averages[0])
+        self.assertIn('average_value', averages[0])
+        self.assertEqual(averages[0]['average_value'], 25.0)
+
+    def test_calculate_averages_invalid_interval(self):
+        metrics_service = MetricsService()
+
+        with self.assertRaises(ValueError):
+            metrics_service.calculate_averages('invalid_interval')
