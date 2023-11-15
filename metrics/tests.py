@@ -17,7 +17,7 @@ class MetricViewTests(TestCase):
         response = self.client.post(url, data=json.dumps(data), content_type='application/json')
 
         self.assertEqual(response.status_code, 200)
-        metric = Metric.objects.first()
+        metric = Metric.objects.last()
         self.assertIsNotNone(metric)
         self.assertEqual(metric.timestamp.isoformat(), data['timestamp'])
         self.assertEqual(metric.name, data['name'])
@@ -97,27 +97,27 @@ class MetricServicesTests(TestCase):
 
         averages = metrics_service.calculate_averages('minute')
 
-        self.assertIn('time_interval', averages[0])
-        self.assertIn('average_value', averages[0])
-        self.assertEqual(averages[0]['average_value'], 25.0)
+        self.assertIn('time_interval', averages[-1])
+        self.assertIn('temperature', averages[-1])
+        self.assertEqual(averages[-1]['temperature'], 25.0)
 
     def test_calculate_averages_hour(self):
         metrics_service = MetricsService()
 
         averages = metrics_service.calculate_averages('hour')
 
-        self.assertIn('time_interval', averages[0])
-        self.assertIn('average_value', averages[0])
-        self.assertEqual(averages[0]['average_value'], 25.0)
+        self.assertIn('time_interval', averages[-1])
+        self.assertIn('temperature', averages[-1])
+        self.assertEqual(averages[-1]['temperature'], 25.0)
 
     def test_calculate_averages_day(self):
         metrics_service = MetricsService()
 
         averages = metrics_service.calculate_averages('day')
 
-        self.assertIn('time_interval', averages[0])
-        self.assertIn('average_value', averages[0])
-        self.assertEqual(averages[0]['average_value'], 25.0)
+        self.assertIn('time_interval', averages[-1])
+        self.assertIn('temperature', averages[-1])
+        self.assertEqual(averages[-1]['temperature'], 25.0)
 
     def test_calculate_averages_invalid_interval(self):
         metrics_service = MetricsService()
