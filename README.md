@@ -33,6 +33,8 @@ Activate the virtual environment:
 ```bash
 pipenv shell
 ```
+> **__Note:__** you might need to reopen your terminal
+
 
 ### Database Setup
 
@@ -83,7 +85,7 @@ curl http://localhost:8000/api/v1/metrics/2/
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{"timestamp": "2023-11-10T12:00:00Z", "name": "example_metric", "value": 42.0}' http://localhost:8000/api/v1/metrics/
 ```
-> **__Note:__** timestamp can be any valid ISO 8601 format
+> **__Note:__** timestamp can be any valid ISO 8601 format, currently supports only UTC timezone.
 
 ### Get average per hour
 
