@@ -10,7 +10,7 @@ from stats.views import AverageView
 class MockMetricsService(MetricsService):
     @staticmethod
     def calculate_averages(interval):
-        return [{'time_interval': '2023-11-10T12:00:00+00:00', 'average_value': 42.0}]
+        return [{'time_interval': '2023-11-10T12:00:00+00:00', 'temperature': 42.0}]
 
 
 class AverageViewTests(TestCase):
@@ -29,8 +29,8 @@ class AverageViewTests(TestCase):
         data = json.loads(response.content.decode('utf-8'))
 
         self.assertIn('time_interval', data[0])
-        self.assertIn('average_value', data[0])
-        self.assertEqual(42.0, data[0]['average_value'])
+        self.assertIn('temperature', data[0])
+        self.assertEqual(42.0, data[0]['temperature'])
 
     def test_get_averages_missing_interval(self):
         url = reverse('metrics-averages')
